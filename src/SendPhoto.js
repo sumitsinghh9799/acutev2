@@ -213,7 +213,17 @@ export default function SendPhotoPage() {
   return (
     <div className="page-container">
       <div className="form-container glass-effect">
-        <h2 className="section-title">Send File!</h2>
+        <div className="flow-head">
+          <p className="label">Protocol Step 01/04</p>
+          <div className="flow-progress" aria-hidden="true">
+            <span className="flow-segment active" />
+            <span className="flow-segment" />
+            <span className="flow-segment" />
+            <span className="flow-segment" />
+          </div>
+        </div>
+
+        <h2 className="section-title">Transfer</h2>
 
         <div {...getRootProps()} className="dropzone">
           <input {...getInputProps()} />
@@ -228,6 +238,14 @@ export default function SendPhotoPage() {
             </div>
           )}
         </div>
+
+        {selectedFile && (
+          <div className="info-box glass-effect">
+            <p className="label">Payload Summary</p>
+            <p className="value">{selectedFile.name}</p>
+            <p className="hint">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+          </div>
+        )}
 
         <button className="action-button upload-button" onClick={handleUpload} disabled={!selectedFile || loading}>
           {loading ? <Loader className="spin" /> : <Upload size={20} />}

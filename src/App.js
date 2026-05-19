@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Shield, Image, Lock, Send, FileUp, FileDown, Camera, Download, Home, Wallet, LogOut, Menu, X } from "lucide-react"
 import "./App.css"
 import { BrowserProvider } from "ethers"
-import Footer from "./Footer"
+import { CinematicFooter } from "./components/ui/motion-footer"
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom"
 import SendPhotoPage from "./SendPhoto"
 import RetrievePhotoPage from "./RetrievePhoto"
@@ -17,6 +17,7 @@ function App() {
   const [showOptions, setShowOptions] = useState(false) // Toggle menu state
   const [walletAddress, setWalletAddress] = useState(null)
   const [chainWarning, setChainWarning] = useState("")
+  const walletContainerRef = useRef(null)
 
   const refreshWalletState = async () => {
     if (!window.ethereum) {
@@ -54,14 +55,20 @@ function App() {
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
+    const html = document.documentElement
+    const body = document.body
+
     if (menuOpen) {
-      document.body.style.overflow = "hidden"
+      html.style.overflow = "hidden"
+      body.style.overflow = "hidden"
     } else {
-      document.body.style.overflow = "auto"
+      html.style.overflow = ""
+      body.style.overflow = ""
     }
 
     return () => {
-      document.body.style.overflow = "auto"
+      html.style.overflow = ""
+      body.style.overflow = ""
     }
   }, [menuOpen])
 
@@ -114,6 +121,29 @@ function App() {
       window.ethereum.removeListener("chainChanged", handleChainChanged)
     }
   }, [])
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (!showOptions) return
+      if (walletContainerRef.current && !walletContainerRef.current.contains(event.target)) {
+        setShowOptions(false)
+      }
+    }
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setShowOptions(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick)
+    document.addEventListener("keydown", handleEscape)
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick)
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }, [showOptions])
 
   // 🏆 Connect to MetaMask
   const connectWallet = async () => {
@@ -278,6 +308,7 @@ function App() {
 
             {/* Wallet Button */}
             <motion.div 
+              ref={walletContainerRef}
               className="wallet-container"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -431,93 +462,79 @@ function App() {
           </Routes>
         </div>
 
-        <Footer />
+        <CinematicFooter />
       </div>
     </Router>
   )
 }
 
 function HomePage() {
+  const featureCards = [
+    {
+      icon: Shield,
+      title: "Client-Side Encryption",
+      description: "Data is encrypted in-browser before upload. Your payload stays private end-to-end.",
+    },
+    {
+      icon: Image,
+      title: "IPFS Storage",
+      description: "Immutable content-addressable storage keeps files tamper-resistant and globally retrievable.",
+    },
+    {
+      icon: Lock,
+      title: "Smart Access Control",
+      description: "Wallet + OTP + smart contract checks enforce controlled, one-time retrieval semantics.",
+    },
+    {
+      icon: Send,
+      title: "One-Click Transfer",
+      description: "Wallet-confirmed transfer flow with explicit transaction status from signature to confirmation.",
+    },
+  ]
+
   return (
     <>
-      {/* Hero Section */}
-      <div className="hero-section">
-        {/* Spline Object Container */}
-        <motion.div 
-          className="spline-container"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-        >
-        </motion.div>
-
+      <section className="hero-section">
         <div className="container">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.45 }}
             className="hero-content"
           >
-            <motion.div 
-              className="tag"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              Powered by Web3 Technology
-            </motion.div>
-
-            <motion.h2 
-              className="hero-title"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              Seamless File Transfer with Web3
-            </motion.h2>
-
-            <motion.p 
-              className="hero-description"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              Securely share your files using blockchain technology and IPFS storage. End-to-end encryption ensures your
-              belongings remain private and accessible.
-            </motion.p>
-
-            <motion.div 
-              className="button-group"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="send-button"
-                onClick={() => (window.location.href = "/send-photo")}
-              >
+            <span className="tag">zero-trust relay</span>
+            <h2 className="hero-title">Secure file transfer, built for self-custody.</h2>
+            <p className="hero-description">
+              Acute encrypts every payload before upload and coordinates access with wallet signatures, OTP checks,
+              and immutable IPFS storage.
+            </p>
+            <div className="button-group">
+              <Link to="/send-photo" className="send-button">
                 <FileUp className="icon" />
-                <span>Send Files</span>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="retrieve-button"
-                onClick={() => (window.location.href = "/retrieve-photo")}
-              >
+                <span>Send File</span>
+              </Link>
+              <Link to="/retrieve-photo" className="retrieve-button">
                 <FileDown className="icon" />
-                <span>Retrieve Files</span>
-              </motion.button>
-            </motion.div>
+                <span>Retrieve File</span>
+              </Link>
+            </div>
           </motion.div>
-        </div>
-      </div>
 
-      {/* Features Section */}
-      <motion.div 
+          <div className="stats-grid">
+            <div className="stat-primary">
+              <p className="stat-label">Protected transfers</p>
+              <p className="stat-value">14,209</p>
+              <p className="stat-delta">+2.4% this week</p>
+            </div>
+            <div className="stat-card">
+              <p className="stat-label">Average confirmation</p>
+              <p className="stat-mini">42 sec</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <motion.section
         className="features-section"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -525,36 +542,14 @@ function HomePage() {
         transition={{ duration: 0.5 }}
       >
         <motion.div className="features-grid">
-          {[
-            {
-               icon: Shield,
-              title: "Military-Grade Security",
-              description: "Base64 encryption and blockchain verification for maximum data protection",
-            },
-            {
-              icon: Image,
-              title: "Instant File Access",
-              description: "Lightning-fast file retrieval with IPFS-powered decentralized storage",
-            },
-            { 
-              icon: Lock, 
-              title: "Smart Access Control", 
-              description: "Automated permission management through Ethereum smart contracts" 
-            },
-            { 
-              icon: Send, 
-              title: "One-Click Sharing", 
-              description: "Smooth interface for secure file transfers with real-time status updates"  
-            },
-          ].map((feature, index) => (
-            <motion.div 
-              key={index} 
+          {featureCards.map((feature, index) => (
+            <motion.div
+              key={index}
               className="feature-card"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.02, y: -5 }}
             >
               <feature.icon className="feature-icon" />
               <h3 className="feature-title">{feature.title}</h3>
@@ -562,7 +557,19 @@ function HomePage() {
             </motion.div>
           ))}
         </motion.div>
-      </motion.div>
+      </motion.section>
+
+      <section className="tech-section">
+        <div className="tech-copy">
+          <span className="tech-badge">Protocol v2.4</span>
+          <h3>Defense in depth, not one single lock.</h3>
+          <ul>
+            <li>Client-side AES encryption before transfer</li>
+            <li>IPFS content-addressed storage and retrieval</li>
+            <li>On-chain one-time access confirmation</li>
+          </ul>
+        </div>
+      </section>
     </>
   )
 }

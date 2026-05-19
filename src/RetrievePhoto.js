@@ -258,7 +258,17 @@ function RetrievePhotoPage() {
   return (
     <div className="page-container">
       <div className="form-container glass-effect">
-        <h2 className="section-title">Retrieve File!</h2>
+        <div className="flow-head">
+          <p className="label">Protocol Step 02/04</p>
+          <div className="flow-progress" aria-hidden="true">
+            <span className="flow-segment active" />
+            <span className="flow-segment active" />
+            <span className="flow-segment" />
+            <span className="flow-segment" />
+          </div>
+        </div>
+
+        <h2 className="section-title">Retrieve</h2>
 
         {walletAddress && (
           <div className="info-box glass-effect">
@@ -287,7 +297,7 @@ function RetrievePhotoPage() {
         </button>
 
         {networkWarning && (
-          <div className="info-box glass-effect">
+          <div className="info-box glass-effect network-alert">
             <p className="label">Network Guardrail</p>
             <p className="value">{networkWarning}</p>
             <button className="action-button" onClick={handleSwitchNetwork} type="button">
