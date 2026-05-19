@@ -628,7 +628,7 @@ input:focus-visible {
 }
 
 .tech-section {
-  padding: clamp(44px, 6vw, 72px) 24px 0;
+  padding: clamp(44px, 6vw, 72px) 24px clamp(72px, 10vw, 120px);
   background: var(--surface-light);
 }
 
@@ -687,11 +687,14 @@ input:focus-visible {
   border: 1px solid var(--border-muted);
   background: var(--surface-light);
   box-shadow: 0 18px 42px rgba(10, 11, 13, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: clamp(20px, 3vw, 36px);
 }
 
 .flow-head {
-  margin-bottom: 16px;
+  margin: 0;
 }
 
 .flow-progress {
@@ -711,7 +714,7 @@ input:focus-visible {
 }
 
 .section-title {
-  margin: 0 0 22px;
+  margin: 0;
   font-family: var(--font-display);
   font-size: clamp(40px, 6vw, 64px);
   font-weight: 400;
@@ -803,8 +806,7 @@ input:focus-visible {
   border-radius: var(--radius-lg);
   background: #ffffff;
   padding: 14px 16px;
-  margin-top: 14px;
-  margin-bottom: 14px;
+  margin: 0;
 }
 
 .info-box.success {
